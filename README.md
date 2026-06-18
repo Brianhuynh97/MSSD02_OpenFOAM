@@ -1,8 +1,6 @@
 # OpenFOAM NACA Airfoil Study
 
-This repository is a command-line project scaffold for MSSD Project 02, based on the exercise notes at `02-openfoam-notes.html`.
-
-It is structured around the two requested study scripts:
+This repository contains Python scripts to prepare and run OpenFOAM simulations of flow over NACA 4-digit airfoils, with a focus on convergence studies and camber effects. The main scripts are:
 
 - `scripts/run_point_convergence.py`: prepares or runs a surface-point convergence study and a simulation-time convergence study for one airfoil.
 - `scripts/run_camber_study.py`: prepares or runs the camber sweep for `M = 0..8` at zero angle of attack.

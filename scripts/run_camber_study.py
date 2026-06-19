@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 os.environ.setdefault("MPLCONFIGDIR", str(ROOT / ".mplconfig"))
+os.environ.setdefault("MPLBACKEND", "Agg")
 
 
 def parse_args() -> argparse.Namespace:
@@ -52,7 +53,7 @@ def main() -> None:
     args = parse_args()
 
     from openfoam_project.airfoil import NACA4Spec
-    from openfoam_project.case import FlowConfig, prepare_case, run_case
+    from openfoam_project.case import FlowConfig, run_case, setup_case_from_example
 
     args.results_dir.mkdir(parents=True, exist_ok=True)
     rows = []
@@ -69,7 +70,7 @@ def main() -> None:
             end_time=args.end_time,
             write_interval=args.write_interval,
         )
-        prepare_case(case_dir, spec, args.surface_points, flow)
+        setup_case_from_example(case_dir, spec, args.surface_points, flow)
         if args.prepare_only:
             continue
         import pandas as pd

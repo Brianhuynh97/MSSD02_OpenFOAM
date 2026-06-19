@@ -6,8 +6,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
+import numpy as np
+
 from .airfoil import NACA4Spec, generate_naca4_airfoil
-from .mesher import write_block_mesh_dict
+from .mesher import curiosityFluidsAirfoilMesher
 
 
 DEFAULT_IMAGE = "microfluidica/openfoam:13"
@@ -308,17 +310,32 @@ boundaryField
         (case_dir / "0" / name).write_text(content, encoding="utf-8")
 
 
-def prepare_case(case_dir: Path, spec: NACA4Spec, points: int, flow: FlowConfig, *, overwrite: bool = True) -> Path:
+def setup_case_from_example(
+    case_dir: Path,
+    spec: NACA4Spec,
+    points: int,
+    flow: FlowConfig,
+    *,
+    chord: float = 1.0,
+    overwrite: bool = True,
+) -> np.ndarray:
+    """Replicate the notebook example workflow and return the surface points."""
     if overwrite and case_dir.exists():
         shutil.rmtree(case_dir)
+
     write_case_stub(case_dir)
-    airfoil_points = generate_naca4_airfoil(spec, points=points)
-    write_block_mesh_dict(airfoil_points, case_dir / "system" / "blockMeshDict")
+    airfoil_points = generate_naca4_airfoil(spec, chord=chord, points=points)
+    curiosityFluidsAirfoilMesher(airfoil_points, case_dir / "system" / "blockMeshDict")
     create_control_dict(case_dir, flow)
     create_momentum_transport_sa(case_dir)
     generate_openfoam_fvschemes_fvsolution(case_dir)
     generate_physical_properties(case_dir, flow.viscosity)
     generate_0_directory(case_dir, flow)
+    return airfoil_points
+
+
+def prepare_case(case_dir: Path, spec: NACA4Spec, points: int, flow: FlowConfig, *, overwrite: bool = True) -> Path:
+    setup_case_from_example(case_dir, spec, points, flow, overwrite=overwrite)
     return case_dir
 
 

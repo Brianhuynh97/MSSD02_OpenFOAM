@@ -6,6 +6,11 @@ from pathlib import Path
 import numpy as np
 
 
+def curiosityFluidsAirfoilMesher(airfoil_points: np.ndarray, output_path: Path | str = "openfoam_naca/system/blockMeshDict") -> Path:
+    """Compatibility wrapper mirroring the example's mesher call shape."""
+    return write_block_mesh_dict(airfoil_points, Path(output_path))
+
+
 def write_block_mesh_dict(airfoil_points: np.ndarray, output_path: Path) -> Path:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 

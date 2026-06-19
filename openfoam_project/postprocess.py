@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
+import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
@@ -11,6 +12,13 @@ import pandas as pd
 class ForceSummary:
     cd: float
     cl: float
+
+
+@dataclass(frozen=True)
+class ResidualSummary:
+    ux: float
+    uy: float
+    p: float
 
 
 def read_force_coeffs(case_dir: Path) -> pd.DataFrame:
@@ -31,6 +39,11 @@ def summarize_tail_force_coeffs(force_df: pd.DataFrame, tail_fraction: float = 0
     tail_count = max(1, int(len(force_df) * tail_fraction))
     tail = force_df.tail(tail_count)
     return ForceSummary(cd=float(tail["cd"].mean()), cl=float(tail["cl"].mean()))
+
+
+def summarize_final_residuals(residual_df: pd.DataFrame) -> ResidualSummary:
+    last_row = residual_df.tail(1).iloc[0]
+    return ResidualSummary(ux=float(last_row["Ux"]), uy=float(last_row["Uy"]), p=float(last_row["p"]))
 
 
 def save_force_plot(force_df: pd.DataFrame, output_path: Path) -> None:
@@ -59,6 +72,20 @@ def save_residual_plot(residual_df: pd.DataFrame, output_path: Path) -> None:
     plt.ylabel("Residual")
     plt.grid(True, which="both", linestyle="--", alpha=0.5)
     plt.legend()
+    plt.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(output_path, dpi=200)
+    plt.close()
+
+
+def save_airfoil_plot(airfoil_points: np.ndarray, output_path: Path, *, title: str) -> None:
+    plt.figure(figsize=(10, 5))
+    plt.plot(airfoil_points[:, 0], airfoil_points[:, 1], "o-", linewidth=1.5, markersize=3)
+    plt.gca().set_aspect("equal")
+    plt.title(title)
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.grid(True, linestyle="--", alpha=0.5)
     plt.tight_layout()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(output_path, dpi=200)

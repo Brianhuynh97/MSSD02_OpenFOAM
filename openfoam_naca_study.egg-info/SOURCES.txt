@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+openfoam_naca_study.egg-info/PKG-INFO
+openfoam_naca_study.egg-info/SOURCES.txt
+openfoam_naca_study.egg-info/dependency_links.txt
+openfoam_naca_study.egg-info/requires.txt
+openfoam_naca_study.egg-info/top_level.txt
+openfoam_project/__init__.py
+openfoam_project/airfoil.py
+openfoam_project/case.py
+openfoam_project/mesher.py
+openfoam_project/postprocess.py

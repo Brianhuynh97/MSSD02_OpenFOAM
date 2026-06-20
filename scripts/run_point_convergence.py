@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import sys
 from pathlib import Path
@@ -143,6 +144,23 @@ def write_summary(
         lines.extend(["", "## Runtime-study failures", ""])
         lines.extend(f"- `{entry['case_dir']}`: {entry['error']}" for entry in time_failures)
     output_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_recommended_settings(
+    output_path: Path,
+    *,
+    spec: "NACA4Spec",
+    recommended_points: int | None,
+    runtime_study_points: int,
+    recommended_end_time: float | None,
+) -> None:
+    payload = {
+        "airfoil": spec.digits,
+        "recommended_points": recommended_points,
+        "runtime_study_points": runtime_study_points,
+        "recommended_end_time": recommended_end_time,
+    }
+    output_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> None:
@@ -294,6 +312,13 @@ def main() -> None:
             recommended_end_time=recommended_end_time,
             point_failures=point_failures,
             time_failures=time_failures,
+        )
+        write_recommended_settings(
+            args.results_dir / "recommended_settings.json",
+            spec=spec,
+            recommended_points=recommended_points,
+            runtime_study_points=time_study_points,
+            recommended_end_time=recommended_end_time,
         )
 
 

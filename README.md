@@ -53,6 +53,7 @@ The convergence script writes:
 - `results/convergence/point_convergence.png`
 - `results/convergence/runtime_convergence.png`
 - `results/convergence/convergence_summary.md`
+- `results/convergence/recommended_settings.json`
 
 The summary file reports the recommended number of surface points and the recommended simulation end time based on coefficient and residual tolerances.
 
@@ -89,16 +90,19 @@ Prepare the camber-study case directories:
 python3 scripts/run_camber_study.py --prepare-only
 ```
 
-Run the camber study with the chosen settings:
+Run the camber study using the recommended settings from the convergence study:
 
 ```bash
-python3 scripts/run_camber_study.py --surface-points 32 --end-time 0.8 --runner docker
+python3 scripts/run_camber_study.py --runner docker
 ```
 
 The camber study writes:
 
 - `results/camber/camber_sweep.csv`
 - `results/camber/camber_sweep.png`
+- `results/camber/camber_summary.md`
+
+If a highly cambered case fails `checkMesh` at the baseline discretization, the camber-study script automatically retries larger surface-point counts and records the actual point count used for that case in `results/camber/camber_sweep.csv`.
 
 Generated case folders go under `cases/`. Generated CSV summaries, plots, and Markdown summaries go under `results/`.
 
